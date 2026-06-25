@@ -145,13 +145,17 @@ function pageToExhibit(page) {
   };
 }
 
-/* ── boot ── */
-app.listen(PORT, () => {
-  console.log(`Museum of Wonder · http://localhost:${PORT}`);
-  if (!NOTION_TOKEN || !NOTION_DB_ID) {
-    console.log('  (!) NOTION_TOKEN or NOTION_EXHIBITS_DB_ID not set — using stub data');
-    console.log('      Copy .env.example to .env and fill in your credentials to connect Notion.');
-  } else {
-    console.log('  Notion integration active');
-  }
-});
+/* ── boot (local dev only) ── */
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Museum of Wonder · http://localhost:${PORT}`);
+    if (!NOTION_TOKEN || !NOTION_DB_ID) {
+      console.log('  (!) NOTION_TOKEN or NOTION_EXHIBITS_DB_ID not set — using stub data');
+      console.log('      Copy .env.example to .env and fill in your credentials to connect Notion.');
+    } else {
+      console.log('  Notion integration active');
+    }
+  });
+}
+
+module.exports = app;
