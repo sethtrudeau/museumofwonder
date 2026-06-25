@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Museum of Wonder · Playlab</title>
+
+<link rel="stylesheet" href="design-system/colors_and_type.css" />
+<!-- Local Vollkorn re-declaration so the relative path resolves against this HTML -->
+<style>
+  @font-face {
+    font-family: "Vollkorn";
+    src: url("design-system/fonts/Vollkorn-VariableFont_wght.ttf") format("truetype-variations");
+    font-weight: 400 700; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "Vollkorn";
+    src: url("design-system/fonts/Vollkorn-Italic-VariableFont_wght.ttf") format("truetype-variations");
+    font-weight: 400 700; font-style: italic; font-display: swap;
+  }
+
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--background);
+    overflow: hidden;        /* the museum is a self-contained viewport */
+    height: 100vh;
+  }
+  #root { width: 100vw; height: 100vh; }
+
+  /* tiny utility classes used across views */
+  .mono { font-family: var(--font-mono); }
+  .upper { text-transform: uppercase; letter-spacing: 0.06em; }
+</style>
+</head>
+<body>
+<div id="root">
+  <!-- Splash while React boots -->
+  <div style="
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 8px;
+    font-family: 'Spline Sans Mono', ui-monospace, monospace;
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #6e6e68;">
+    <div>Museum of Wonder</div>
+    <div style="opacity: 0.6;">unlocking the doors…</div>
+  </div>
+</div>
+
+<!-- Splash thumbnail for bundlers -->
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#fbf9f6"/>
+    <g stroke="#0c0f14" stroke-width="1.5" fill="none">
+      <rect x="20" y="22" width="60" height="56"/>
+      <line x1="20" y1="34" x2="80" y2="34"/>
+      <line x1="20" y1="46" x2="80" y2="46"/>
+      <line x1="20" y1="58" x2="80" y2="58"/>
+      <line x1="20" y1="70" x2="80" y2="70"/>
+    </g>
+    <rect x="22" y="60" width="20" height="9" fill="#feffa0"/>
+  </svg>
+</template>
+
+<!-- React + Babel (pinned) -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+  integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
+  crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+  integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
+  crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+  integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+  crossorigin="anonymous"></script>
+
+<!-- Tweaks shell + views, in dependency order -->
+<!-- exhibits-data.jsx removed: exhibit content now served by /api/exhibits (see server.js) -->
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="view-brand-shapes.jsx"></script>
+<script type="text/babel" src="view-mini-apps.jsx"></script>
+<script type="text/babel" src="view-popover.jsx"></script>
+<script type="text/babel" src="view-minimap.jsx"></script>
+<script type="text/babel" src="view-floor-select.jsx"></script>
+<script type="text/babel" src="view-floorplan.jsx"></script>
+<script type="text/babel" src="view-pov.jsx"></script>
+<script type="text/babel" src="museum-app.jsx"></script>
+</body>
+</html>

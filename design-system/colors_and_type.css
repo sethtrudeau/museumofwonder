@@ -1,0 +1,432 @@
+/* ============================================================
+ * Playlab — colors_and_type.css · v2.4
+ * Swiss-modern paper-and-ink. Cream canvas, ink marks, one yellow highlighter.
+ *
+ * This file is the single source of truth for tokens in design artifacts
+ * built from this design system. Drop it at the top of any HTML file:
+ *
+ *   <link rel="stylesheet" href="colors_and_type.css">
+ *
+ * v2.4 highlights — guidance only, no token changes:
+ *   • Two registers: Editorial (marketing, slides, brand docs) vs Swiss (product UI).
+ *   • Three card tiers: Quiet (no border, product default) / Framed (1px ink,
+ *     one-per-view emphasis) / Floating (shadow + hairline, only when a surface
+ *     actually rises off the page — toasts, popovers, dropdowns, modals).
+ *   • Drop shadows are tier-bound — Quiet and Framed never shadow; Floating always does.
+ *   • Retired anti-pattern: "ink-bordered card everywhere on product."
+ * See `.pl-card--quiet/--framed/--floating` helper classes at the end of this file.
+ *
+ * Fonts are loaded from Google Fonts in this file (no TTFs shipped — the
+ * canonical system uses CDN delivery). If shipping offline, self-host.
+ * ============================================================ */
+
+/* ---------- Font load ---------
+ * Vollkorn is shipped locally as a variable font (upright + italic). The
+ * other two families (Instrument Sans, Spline Sans Mono) load from Google
+ * Fonts — when shipping offline, self-host these as well.
+ *
+ * NOTE: when this CSS is loaded from a sub-folder (e.g. preview/, ui_kits/),
+ * the relative `fonts/` path resolves against the CSS location, not the
+ * HTML. The brand font is registered locally here AND mirrored at the HTML
+ * level (every HTML file that consumes this stylesheet from a sub-folder
+ * re-declares @font-face with its own relative path).
+ */
+@font-face {
+  font-family: "Vollkorn";
+  src: url("fonts/Vollkorn-VariableFont_wght.ttf") format("truetype-variations");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Vollkorn";
+  src: url("fonts/Vollkorn-Italic-VariableFont_wght.ttf") format("truetype-variations");
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+}
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap');
+/* Icon font — Phosphor regular (default) + fill (emphasis only) */
+@import url('https://unpkg.com/@phosphor-icons/web@2/src/regular/style.css');
+@import url('https://unpkg.com/@phosphor-icons/web@2/src/fill/style.css');
+
+
+/* ============================================================
+ * TOKENS — LIGHT (default)
+ * ============================================================ */
+:root, [data-theme="light"] {
+  /* ── Surfaces ── paper first, ink-outlined cards over it */
+  --background:      #fbf9f6;   /* cream — page canvas, ALWAYS the body */
+  --surface1:        #eff0e5;   /* pale green-cream — quiet grouping */
+  --surface2:        #ffffff;   /* pure white — cards, inputs, modals */
+  --surface3:        #dbdbdb;   /* light gray — inset wells, disabled */
+  --overlay:         #ffffff;   /* floating layers (popovers, modals) */
+  --scrim:           rgba(12, 15, 20, 0.4);
+
+  /* ── Lines & outlines ── ink is the structural mark */
+  --border:          #dbdbdb;   /* quiet divider */
+  --hairline:        #b8b8b1;   /* card internal divider */
+  --outline:         #0c0f14;   /* 1px component outlines (the signature) */
+  --outline-quiet:   #dbdbdb;   /* hairline outline for recessed surfaces */
+
+  /* ── Ink (text + primary fill) ── */
+  --ink:             #0c0f14;
+  --ink-inverse:     #ffffff;
+  --text1:           #0c0f14;   /* body prose — full contrast, never mid-gray */
+  --text2:           #535350;   /* secondary text */
+  --text3:           #6e6e68;   /* tertiary text */
+  --text4:           #8f8f88;   /* disabled */
+
+  /* ── Two accents — never on the same surface ── */
+  --highlighter:     #feffa0;   /* the one selected/focused thing per view */
+  --on-highlighter:  #0c0f14;   /* invariant — never flips with mode */
+  --link:            #356fe5;   /* v2.3 — narrow technical role: inline hyperlinks + code keyword only.
+                                   NOT a brand accent. Yellow highlighter is the singular spine. */
+
+  /* ── Status ── alt palette pulled into semantic roles */
+  --success:         #00832d;
+  --success-bg:      rgba(0, 131, 45, 0.10);
+  --warning:         #ff6b2e;
+  --warning-bg:      rgba(255, 107, 46, 0.10);
+  --error:           #df3737;
+  --error-bg:        rgba(223, 55, 55, 0.06);
+
+  /* ── Code surface ── schematic-blue carrier */
+  --code-surface:    #f6f4ee;
+  --code-text:       #0c0f14;
+  --code-keyword:    #356fe5;
+  --code-comment:    #6e6e68;
+
+  /* ── Alt palette · v2.3 · 16 hues / 5 families ──
+   * Marketing, newsletter, event cards, alerts. NOT default product UI. */
+  --tan:             #c1bab2;
+  --warm-tan:        #bd9984;
+  --pale-sky:        #b0d4ff;
+  --pale-cyan:       #a2dff0;
+  --mid-blue:        #569aff;
+  --schematic-blue:  #356fe5;   /* same hex as --link */
+  --orange:          #ff6b2e;   /* same hex as --warning */
+  --red:             #df3737;   /* same hex as --error */
+  --yellow:          #fff34d;   /* decorative — NOT the highlighter */
+  --chartreuse:      #c8ff3d;
+  --olive:           #c3c96e;
+  --lime:            #8abe3e;
+  --green:           #00832d;   /* same hex as --success */
+  --palest-pink:     #ffe1fb;
+  --pale-pink:       #ffb6f1;
+  --pink:            #fd93d5;
+
+  /* ============================================================
+   * TYPOGRAPHY
+   * ============================================================ */
+  --font-body:       "Instrument Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono:       "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-editorial:  "Vollkorn", Georgia, "Times New Roman", serif;
+  /* Use: --font-body for everything human-authored. --font-mono for code + system chrome
+     (page footers, version strings, section IDs). --font-editorial for marketing pull
+     quotes only — never product surfaces. */
+
+  /* ── Type scale · Perfect Fourth (1.333), anchored at 16px body ── */
+  --text-hero:        clamp(48px, 6.5vw, 72px);  /* marketing hero only */
+  --text-display:     50px;   /* page-opener product titles, secondary marketing heads */
+  --text-title:       38px;   /* page titles */
+  --text-heading:     28px;   /* section headings */
+  --text-subheading:  21px;   /* card titles, widget headers */
+  --text-body:        16px;   /* body prose — anchor of the scale */
+  --text-body-sm:     14px;   /* secondary prose, tighter rows */
+  --text-meta:        13px;   /* in-card metadata, sans (v2.2) */
+  --text-meta-sm:     12px;   /* small notes, chip counts, sans (v2.2) */
+  --text-chrome:      11px;   /* system chrome — mono UPPERCASE 0.06em */
+  --text-label:       11px;   /* widget labels — sans UPPERCASE 0.06em */
+  --text-caption:     12px;   /* non-numeric footnotes */
+  --text-quote:       28px;   /* pull quotes — Vollkorn upright, marketing only */
+
+  /* ============================================================
+   * LAYOUT — 12-column grid, container scale
+   * ============================================================ */
+  --w-prose:         640px;   /* reading column */
+  --w-form:          520px;   /* modal interiors, dialog forms */
+  --w-app:          1280px;   /* product surface */
+  --w-marketing:    1200px;   /* landing/marketing */
+  --w-wide:         1440px;   /* editorial breakouts */
+
+  --section-y-sm:    64px;
+  --section-y-md:    96px;
+  --section-y-lg:   160px;
+
+  --space-2xs:        2px;
+  --space-xs:         4px;
+  --space-sm:         8px;
+  --space-md:        16px;
+  --space-lg:        24px;
+  --space-xl:        32px;
+  --space-2xl:       48px;
+  --space-3xl:       64px;
+  --space-4xl:       96px;
+
+  /* ============================================================
+   * RADII — 4 tokens (v2.2)
+   * ============================================================ */
+  --r-control:        4px;    /* buttons, inputs, icon buttons */
+  --r-surface:        8px;    /* cards, textareas, popovers, dropdowns */
+  --r-container:     16px;    /* modals only */
+  --r-pill:         999px;    /* filter chips, tags, pill tabs */
+
+  /* ============================================================
+   * MOTION — three+1 durations, three easings
+   * ============================================================ */
+  --ease-fast:       cubic-bezier(0.4, 0, 0.2, 1);    /* hover, press, color change */
+  --ease-medium:     cubic-bezier(0.2, 0.8, 0.2, 1);  /* tag select, dropdown, drawer */
+  --ease-slow:       cubic-bezier(0.22, 1, 0.36, 1);  /* modal entry, page transition */
+  --dur-instant:     100ms;
+  --dur-fast:        140ms;
+  --dur-medium:      220ms;
+  --dur-slow:        360ms;
+
+  /* ============================================================
+   * ELEVATION — flat by default; ink outlines do the work
+   * ============================================================ */
+  --shadow-2:        0 4px 16px rgba(12, 15, 20, 0.08);   /* popovers, dropdowns */
+  --shadow-3:        0 16px 48px rgba(12, 15, 20, 0.14);  /* modals */
+}
+
+/* ============================================================
+ * TOKENS — DARK (paper-and-ink, recessed)
+ * Light lifts white cards above cream; dark sinks deeper-black cards into ink.
+ * 5-tier elevation: surface2 #050608 → bg #0c0f14 → surface1 #14171d → overlay #1c1f25 → surface3 #252528
+ * ============================================================ */
+[data-theme="dark"] {
+  --background:      #0c0f14;
+  --surface1:        #14171d;
+  --surface2:        #050608;   /* deeper black — embedded sink */
+  --surface3:        #252528;
+  --overlay:         #1c1f25;
+  --scrim:           rgba(0, 0, 0, 0.5);
+
+  --border:          #252528;
+  --hairline:        #252528;
+  --outline:         #7a7a73;   /* lifted for WCAG 1.4.11 (≥3:1 against bg & surface2) */
+  --outline-quiet:   #252528;
+
+  --ink:             #fbf9f6;
+  --ink-inverse:     #0c0f14;
+  --text1:           #fbf9f6;
+  --text2:           #b8b8b1;
+  --text3:           #a0a097;
+  --text4:           #6e6e68;
+
+  --highlighter:     #feffa0;   /* INVARIANT — same yellow, both modes */
+  --on-highlighter:  #0c0f14;   /* INVARIANT — always dark text on yellow */
+  --link:            #7ba0f0;   /* lifted from #356fe5 for AA */
+
+  --success:         #2ea958;
+  --success-bg:      rgba(95, 179, 97, 0.18);
+  --warning:         #ff6b2e;
+  --warning-bg:      rgba(255, 107, 46, 0.18);
+  --error:           #ed7b75;
+  --error-bg:        rgba(232, 123, 117, 0.14);
+
+  --code-surface:    #050608;
+  --code-text:       #fbf9f6;
+  --code-keyword:    #7ba0f0;
+  --code-comment:    #8f8f88;
+
+  --shadow-2: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-3: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 24px 56px rgba(0, 0, 0, 0.65);
+}
+
+
+/* ============================================================
+ * REDUCED-MOTION GUARD — codified once at the root
+ * ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  :root { transition: none !important; }
+}
+
+
+/* ============================================================
+ * BASE — html / body / typographic defaults
+ * ============================================================ */
+html, body {
+  font-family: var(--font-body);
+  background: var(--background);
+  color: var(--text1);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ── Semantic type primitives — use these on raw HTML elements ── */
+h1, .h1, .text-title {
+  font-family: var(--font-body);
+  font-size: var(--text-title);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.020em;
+  color: var(--text1);
+}
+h2, .h2, .text-heading {
+  font-family: var(--font-body);
+  font-size: var(--text-heading);
+  font-weight: 600;
+  line-height: 1.20;
+  letter-spacing: -0.014em;
+  color: var(--text1);
+}
+h3, .h3, .text-subheading {
+  font-family: var(--font-body);
+  font-size: var(--text-subheading);
+  font-weight: 600;
+  line-height: 1.30;
+  letter-spacing: -0.008em;
+  color: var(--text1);
+}
+.text-hero {
+  font-family: var(--font-body);
+  font-size: var(--text-hero);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.028em;
+  color: var(--text1);
+}
+.text-display {
+  font-family: var(--font-body);
+  font-size: var(--text-display);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.024em;
+  color: var(--text1);
+}
+p, .text-body {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--text1);
+}
+.text-body-sm {
+  font-size: var(--text-body-sm);
+  line-height: 1.50;
+}
+.text-meta {
+  font-family: var(--font-body);  /* v2.2 — was mono, names+dates are human */
+  font-size: var(--text-meta);
+  line-height: 1.45;
+  color: var(--text2);
+}
+.text-meta-sm {
+  font-family: var(--font-body);
+  font-size: var(--text-meta-sm);
+  line-height: 1.40;
+  color: var(--text2);
+}
+.text-chrome {
+  font-family: var(--font-mono);
+  font-size: var(--text-chrome);
+  font-weight: 400;
+  line-height: 1.30;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.text-label {
+  font-family: var(--font-body);
+  font-size: var(--text-label);
+  font-weight: 500;
+  line-height: 1.30;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+.text-caption {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  line-height: 1.40;
+  color: var(--text3);
+}
+.text-quote {
+  font-family: var(--font-editorial);
+  font-size: var(--text-quote);
+  font-weight: 500;
+  line-height: 1.30;
+  letter-spacing: -0.014em;
+  color: var(--text1);
+  font-style: normal;   /* upright by default; italic optional */
+}
+
+/* ── Inline link inside running text ── */
+a, .link {
+  color: var(--link);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-thickness var(--dur-fast) var(--ease-fast);
+}
+a:hover, .link:hover { text-decoration-thickness: 2px; }
+
+code, .code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--surface1);
+  padding: 2px 6px;
+  border-radius: var(--r-control);
+  color: var(--text1);
+}
+
+
+/* ============================================================
+ * CARD TIERS — v2.4
+ *
+ * Three legitimate treatments. Default is Quiet. Framed and Floating
+ * are intentional escalations, not the baseline.
+ *
+ *   .pl-card--quiet    no border, no shadow — product default
+ *   .pl-card--framed   1px ink (light) / 1px outline (dark), no shadow —
+ *                      one-per-view emphasis on product, default on editorial
+ *   .pl-card--floating 1px hairline + --shadow-2 — toasts, popovers,
+ *                      dropdowns, tooltips, draggable previews
+ *
+ * All three share: --surface2 fill, 8px radius (var(--r-surface)).
+ * Selected state: background --highlighter, text --on-highlighter,
+ * any border flips to --on-highlighter. One-yellow-per-view still holds.
+ * ============================================================ */
+.pl-card,
+.pl-card--quiet,
+.pl-card--framed,
+.pl-card--floating {
+  background: var(--surface2);
+  border-radius: var(--r-surface);
+  color: var(--text1);
+}
+
+.pl-card--quiet {
+  border: none;
+  box-shadow: none;
+}
+
+.pl-card--framed {
+  border: 1px solid var(--outline);
+  box-shadow: none;
+}
+
+.pl-card--floating {
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-2);
+}
+
+/* Selected card — single-yellow-per-view */
+.pl-card--selected,
+.pl-card.is-selected {
+  background: var(--highlighter);
+  color: var(--on-highlighter);
+  border-color: var(--on-highlighter);
+}
+.pl-card--selected *,
+.pl-card.is-selected * {
+  color: var(--on-highlighter);
+}
