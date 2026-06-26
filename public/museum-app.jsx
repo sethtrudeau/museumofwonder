@@ -365,14 +365,101 @@ function LoadingScreen() {
     <div style={{
       position: 'absolute', inset: 0,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      flexDirection: 'column', gap: 8,
+      flexDirection: 'column', gap: 20,
       fontFamily: 'var(--font-mono)',
       fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase',
       color: 'var(--text3)',
       background: 'var(--background)',
     }}>
+      <style>{`
+        @keyframes fp-reveal {
+          0%, 5%  { clip-path: inset(0 0 100% 0); }
+          72%     { clip-path: inset(0 0 0% 0); }
+          90%     { clip-path: inset(0 0 0% 0); }
+          100%    { clip-path: inset(0 0 100% 0); }
+        }
+        @keyframes fp-scanline {
+          0%, 5%  { top: -5px; opacity: 0; }
+          8%      { opacity: 1; }
+          72%     { top: 75px; opacity: 1; }
+          80%     { top: 75px; opacity: 0; }
+          100%    { top: 75px; opacity: 0; }
+        }
+        .fp-bright { animation: fp-reveal 2.6s ease-in-out infinite; }
+        .fp-line   { animation: fp-scanline 2.6s ease-in-out infinite; }
+      `}</style>
+
       <div style={{ color: 'var(--text1)' }}>Museum of Wonder</div>
+
+      <FingerprintScanner />
+
       <div>unlocking the doors…</div>
+    </div>
+  );
+}
+
+function FingerprintScanner() {
+  const CX = 30;
+  // Loop-pattern ridges: arcs from (CX-rx, cy) to (CX+rx, cy) arching upward.
+  // cy is the y of the open end (bottom of each arch); top of arch = cy - ry.
+  const RIDGES = [
+    { rx: 4,  ry: 5,  cy: 56 },
+    { rx: 7,  ry: 10, cy: 57 },
+    { rx: 11, ry: 15, cy: 58 },
+    { rx: 15, ry: 20, cy: 59 },
+    { rx: 19, ry: 25, cy: 60 },
+    { rx: 22, ry: 29, cy: 61 },
+    { rx: 25, ry: 33, cy: 62 },
+    { rx: 27, ry: 36, cy: 63 },
+  ];
+
+  // sweep=0 draws the arc through the top (upward arch = ∩ shape)
+  const d = ({ rx, ry, cy }) =>
+    `M ${CX - rx} ${cy} A ${rx} ${ry} 0 0 0 ${CX + rx} ${cy}`;
+
+  const ridgesDim = (
+    <>
+      <circle cx={CX} cy="54" r="1.5" fill="var(--text4)" opacity="0.35"/>
+      {RIDGES.map((r, i) => (
+        <path key={i} d={d(r)}
+          fill="none" stroke="var(--text4)" strokeWidth="1" strokeLinecap="round" opacity="0.35"/>
+      ))}
+    </>
+  );
+
+  const ridgesBright = (
+    <>
+      <circle cx={CX} cy="54" r="1.5" fill="var(--ink)"/>
+      {RIDGES.map((r, i) => (
+        <path key={i} d={d(r)}
+          fill="none" stroke="var(--ink)" strokeWidth="1.5" strokeLinecap="round"/>
+      ))}
+    </>
+  );
+
+  return (
+    <div style={{ position: 'relative', width: 60, height: 80 }}>
+      {/* Scanner border */}
+      <svg viewBox="0 0 60 80" width="60" height="80"
+        style={{ position: 'absolute', inset: 0 }}>
+        <rect x="1" y="1" width="58" height="78" rx="5"
+          fill="none" stroke="var(--outline)" strokeWidth="0.75"/>
+        {ridgesDim}
+      </svg>
+
+      {/* Bright fingerprint revealed by scan */}
+      <div className="fp-bright"
+        style={{ position: 'absolute', inset: 0 }}>
+        <svg viewBox="0 0 60 80" width="60" height="80">
+          {ridgesBright}
+        </svg>
+      </div>
+
+      {/* Scan line */}
+      <div className="fp-line" style={{
+        position: 'absolute', left: 4, right: 4, height: 10, opacity: 0,
+        background: 'linear-gradient(to bottom, transparent, var(--ink) 50%, transparent)',
+      }}/>
     </div>
   );
 }
