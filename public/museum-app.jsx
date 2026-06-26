@@ -51,9 +51,6 @@ function MuseumApp() {
   const section = useMemo(() => floor?.sections.find(s => s.id === sectionId) || null, [floor, sectionId]);
   const exhibit = useMemo(() => section?.exhibits.find(e => e.id === exhibitId) || null, [section, exhibitId]);
 
-  /* show splash while fetching */
-  if (floors === null) return <LoadingScreen />;
-
   /* nav handlers */
   const enterFloor   = (id) => { setFloorId(id);   setSectionId(null); setExhibitId(null); };
   const enterSection = (id) => { setSectionId(id); setExhibitId(null); };
@@ -73,6 +70,9 @@ function MuseumApp() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [exhibitId, sectionId, floorId]);
+
+  /* show splash while fetching */
+  if (floors === null) return <LoadingScreen />;
 
   return (
     <div className={`museum-root ${t.gridBg ? 'has-grid' : ''}`}>
