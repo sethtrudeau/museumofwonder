@@ -76,6 +76,7 @@ function pageToExhibit(page) {
     label:       text(p['Label']),
     byline:      text(p['Byline']),
     tint:        select(p['Tint']) || 'var(--warm-tan)',
+    wall:        select(p['Wall']) || null,
     essay:       text(p['Essay']),
     quote:       quoteText ? { text: quoteText, attribution: text(p['Quote Attribution']) } : null,
     video:       bool(p['Has Video']) ? { caption: text(p['Video Caption']) } : null,
