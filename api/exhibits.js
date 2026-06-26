@@ -64,16 +64,18 @@ function pageToExhibit(page) {
 
   if (!bool(p['Active'])) return null;
 
+  const type      = select(p['Type']) || 'Exhibit';
   const quoteText = text(p['Quote']);
 
   return {
     id:          page.id,
+    type,
     sectionId:   select(p['Section']),
-    label:       text(p['Label']),
     title:       text(p['Title']),
+    description: text(p['Description']),
+    label:       text(p['Label']),
     byline:      text(p['Byline']),
     tint:        select(p['Tint']) || 'var(--warm-tan)',
-    wall:        select(p['Wall']) || 'back',
     essay:       text(p['Essay']),
     quote:       quoteText ? { text: quoteText, attribution: text(p['Quote Attribution']) } : null,
     video:       bool(p['Has Video']) ? { caption: text(p['Video Caption']) } : null,

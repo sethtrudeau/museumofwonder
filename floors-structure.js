@@ -3,16 +3,22 @@
  *
  * This file owns everything that doesn't come from Notion:
  *   - floor metadata (id, num, name, subtitle, status, palette)
- *   - section geometry (id, name, x/y/w/h, shape path, label/door/dot positions)
+ *   - section geometry (id, x/y/w/h, shape path, label/door/dot positions)
  *
- * buildFloors(notionExhibits?) merges Notion exhibit content into the
- * sections. If notionExhibits is omitted (or Notion isn't configured),
- * it falls back to stub exhibits so the app always renders something.
+ * Section IDs use the format {floorId}-{position} (e.g. "about-left").
+ * These match the "Section" select field values in the Notion database.
+ *
+ * buildFloors(notionEntries?) merges Notion data into the structure.
+ *   - notionEntries is a flat array of Collection + Exhibit objects.
+ *   - Collection entries define which rooms exist and their display names.
+ *   - Exhibit entries populate those rooms with content.
+ *   - Rooms without a Collection entry are hidden from the UI.
+ *   - If notionEntries is omitted, stub data is used so the app renders.
  * ============================================================ */
 
 'use strict';
 
-/* ── stub generator (used when a section has no Notion data yet) ── */
+/* ── stub generator (used when Notion is not configured) ── */
 function stubExhibits(count, prefix, tint) {
   const titles = [
     'Untitled, in progress',
@@ -53,7 +59,7 @@ const FLOOR_SECTIONS = [
     floorId: 'about',
     sections: [
       {
-        id: 'atrium',
+        id: 'about-left',
         name: 'The Atrium',
         x: 2, y: 2, w: 6, h: 6,
         shape: {
@@ -68,7 +74,7 @@ const FLOOR_SECTIONS = [
         stubTint: 'var(--warm-tan)',
       },
       {
-        id: 'origins',
+        id: 'about-center',
         name: 'Origins',
         x: 11, y: 1, w: 11, h: 7,
         shape: {
@@ -83,22 +89,7 @@ const FLOOR_SECTIONS = [
         stubTint: 'var(--palest-pink)',
       },
       {
-        id: 'principles',
-        name: 'Hall of Five Principles',
-        x: 1, y: 8, w: 13, h: 5,
-        shape: {
-          path: 'M 1 9 Q 7 6.8 13 9 L 13 13 L 1 13 Z',
-          label: { x: 7,  y: 11.5, anchor: 'middle' },
-          door:  { x: 7,  y: 8.7,  side: 'north' },
-          dots:  [{ x: 7, y: 11 }],
-        },
-        povStyle: 'isometric',
-        stubCount: 1,
-        stubPrefix: 'p',
-        stubTint: 'var(--pale-cyan)',
-      },
-      {
-        id: 'charter',
+        id: 'about-right',
         name: 'Charter & People',
         x: 14, y: 8, w: 8, h: 5,
         shape: {
@@ -120,7 +111,7 @@ const FLOOR_SECTIONS = [
     floorId: 'build',
     sections: [
       {
-        id: 'b-tables',
+        id: 'build-left',
         name: 'Workshop tables',
         x: 2, y: 2, w: 12, h: 6,
         shape: {
@@ -133,7 +124,7 @@ const FLOOR_SECTIONS = [
         stubTint: 'var(--chartreuse)',
       },
       {
-        id: 'b-drafts',
+        id: 'build-center',
         name: 'Drafts in progress',
         x: 15, y: 2, w: 7, h: 6,
         shape: {
@@ -146,7 +137,7 @@ const FLOOR_SECTIONS = [
         stubTint: 'var(--lime)',
       },
       {
-        id: 'b-finished',
+        id: 'build-right',
         name: 'Things that shipped',
         x: 2, y: 9, w: 20, h: 4,
         shape: {
@@ -166,8 +157,8 @@ const FLOOR_SECTIONS = [
     floorId: 'special',
     sections: [
       {
-        id: 's-climate',
-        name: 'Wing A · Climate literacy',
+        id: 'special-left',
+        name: 'Wing A',
         x: 1, y: 1, w: 7, h: 12,
         shape: {
           path: 'M 1 1.5 L 7 1 L 8 13 L 2 13 Z',
@@ -179,8 +170,8 @@ const FLOOR_SECTIONS = [
         stubTint: 'var(--pale-pink)',
       },
       {
-        id: 's-language',
-        name: 'Wing B · World languages',
+        id: 'special-center',
+        name: 'Wing B',
         x: 9, y: 1, w: 6, h: 12,
         shape: {
           path: 'M 9 1 L 15 1.5 L 14 13 L 8 13 Z',
@@ -192,8 +183,8 @@ const FLOOR_SECTIONS = [
         stubTint: 'var(--pink)',
       },
       {
-        id: 's-math',
-        name: 'Wing C · Math tools',
+        id: 'special-right',
+        name: 'Wing C',
         x: 16, y: 1, w: 7, h: 12,
         shape: {
           path: 'M 16 1.5 L 22 1 L 23 13 L 17 13 Z',
@@ -212,7 +203,7 @@ const FLOOR_SECTIONS = [
     floorId: 'youth',
     sections: [
       {
-        id: 'y-elem',
+        id: 'youth-left',
         name: 'Elementary works',
         x: 1, y: 8, w: 7, h: 5,
         shape: {
@@ -225,7 +216,7 @@ const FLOOR_SECTIONS = [
         stubTint: 'var(--pale-cyan)',
       },
       {
-        id: 'y-mid',
+        id: 'youth-center',
         name: 'Middle school',
         x: 9, y: 5, w: 7, h: 8,
         shape: {
@@ -238,7 +229,7 @@ const FLOOR_SECTIONS = [
         stubTint: 'var(--pale-sky)',
       },
       {
-        id: 'y-high',
+        id: 'youth-right',
         name: 'High school',
         x: 16, y: 1, w: 7, h: 12,
         shape: {
@@ -258,7 +249,7 @@ const FLOOR_SECTIONS = [
     floorId: 'library',
     sections: [
       {
-        id: 'l-stacks',
+        id: 'library-left',
         name: 'The stacks',
         x: 1, y: 1, w: 14, h: 12,
         shape: {
@@ -271,7 +262,7 @@ const FLOOR_SECTIONS = [
         stubTint: 'var(--tan)',
       },
       {
-        id: 'l-reading',
+        id: 'library-right',
         name: 'Reading rotunda',
         x: 16, y: 4, w: 7, h: 7,
         shape: {
@@ -291,7 +282,7 @@ const FLOOR_SECTIONS = [
     floorId: 'lab',
     sections: [
       {
-        id: 'lab-bench',
+        id: 'lab-left',
         name: 'Bench prototypes',
         x: 1, y: 1, w: 10, h: 7,
         shape: {
@@ -304,7 +295,7 @@ const FLOOR_SECTIONS = [
         stubTint: 'var(--orange)',
       },
       {
-        id: 'lab-research',
+        id: 'lab-center',
         name: 'Research notes',
         x: 13, y: 1, w: 10, h: 6,
         shape: {
@@ -317,7 +308,7 @@ const FLOOR_SECTIONS = [
         stubTint: 'var(--yellow)',
       },
       {
-        id: 'lab-failed',
+        id: 'lab-right',
         name: 'The room of failed experiments',
         x: 2, y: 9, w: 20, h: 4,
         shape: {
@@ -335,50 +326,79 @@ const FLOOR_SECTIONS = [
 
 /* ── floor-level metadata ── */
 const FLOOR_META = [
-  { id: 'about',   num: 1, name: 'About Playlab',                  subtitle: 'Lobby, origins, the charter',           status: 'open',        palette: 'var(--yellow)'    },
-  { id: 'build',   num: 2, name: 'Build your first app',           subtitle: 'Workshop tables, in-progress drafts',   status: 'open',        palette: 'var(--chartreuse)' },
-  { id: 'special', num: 3, name: 'Special collections',            subtitle: 'Three rotating wings · changes seasonally', status: 'rotating', palette: 'var(--pale-pink)' },
-  { id: 'youth',   num: 4, name: 'How young people use Playlab',   subtitle: 'Permanent collection',                  status: 'open',        palette: 'var(--pale-cyan)'  },
-  { id: 'library', num: 5, name: 'The Playlab library',            subtitle: 'A quiet floor · reading allowed',       status: 'open',        palette: 'var(--mid-blue)'   },
+  { id: 'about',   num: 1, name: 'About Playlab',                  subtitle: 'Lobby, origins, the charter',               status: 'open',        palette: 'var(--yellow)'     },
+  { id: 'build',   num: 2, name: 'Build your first app',           subtitle: 'Workshop tables, in-progress drafts',       status: 'open',        palette: 'var(--chartreuse)' },
+  { id: 'special', num: 3, name: 'Special collections',            subtitle: 'Three rotating wings · changes seasonally', status: 'rotating',    palette: 'var(--pale-pink)'  },
+  { id: 'youth',   num: 4, name: 'How young people use Playlab',   subtitle: 'Permanent collection',                      status: 'open',        palette: 'var(--pale-cyan)'  },
+  { id: 'library', num: 5, name: 'The Playlab library',            subtitle: 'A quiet floor · reading allowed',           status: 'open',        palette: 'var(--mid-blue)'   },
   { id: 'lab',     num: 6, name: 'The Playlab lab',                subtitle: 'Work in progress · half of this does not work', status: 'in-progress', palette: 'var(--orange)' },
 ];
 
-/* ── buildFloors(notionExhibits?) ─────────────────────────────────
+/* ── buildFloors(notionEntries?) ─────────────────────────────────
  *
- * notionExhibits: array of exhibit objects from Notion, each having:
- *   { id, sectionId, label, title, byline, tint, wall, essay,
- *     quote, video, hasMiniApp, miniAppId, tryItUrl, tryItLabel, sortOrder }
+ * notionEntries: flat array of all active Notion entries, each having:
+ *   { type, id, sectionId, title, description, label, byline, tint,
+ *     essay, quote, video, hasMiniApp, miniAppUrl, tryItUrl, tryItLabel,
+ *     sortOrder }
  *
- * Exhibits are injected into their matching section. Sections that
- * receive no Notion exhibits fall back to stub data.
+ * Entries with type === 'Collection' define which rooms exist and provide
+ * the room's display name and description. Entries with any other type
+ * (or no type) are treated as Exhibits and placed into their room.
+ *
+ * Rooms without a matching Collection entry are hidden from the UI.
+ * If notionEntries is omitted, all rooms show with stub exhibit data.
  * ────────────────────────────────────────────────────────────────── */
-function buildFloors(notionExhibits) {
-  // Group Notion exhibits by sectionId for fast lookup
+function buildFloors(notionEntries) {
+  const hasNotion = Array.isArray(notionEntries);
+
+  if (!hasNotion) {
+    // No Notion config — show all rooms with stub data
+    return FLOOR_META.map((meta) => {
+      const floorSections = FLOOR_SECTIONS.find((f) => f.floorId === meta.id)?.sections ?? [];
+      return {
+        ...meta,
+        sections: floorSections.map(({ stubCount, stubPrefix, stubTint, ...section }) => ({
+          ...section,
+          exhibits: stubExhibits(stubCount, stubPrefix, stubTint),
+        })),
+      };
+    });
+  }
+
+  // Split entries by type
+  const collections = notionEntries.filter((e) => e.type === 'Collection');
+  const exhibits    = notionEntries.filter((e) => e.type !== 'Collection');
+
+  // Build room metadata map from Collections: sectionId → { name, description }
+  const roomMeta = {};
+  for (const col of collections) {
+    if (col.sectionId) roomMeta[col.sectionId] = { name: col.title, description: col.description || '' };
+  }
+
+  // Group exhibits by sectionId and sort by sortOrder then label
   const bySection = {};
-  if (Array.isArray(notionExhibits)) {
-    for (const exhibit of notionExhibits) {
-      if (!exhibit.sectionId) continue;
-      if (!bySection[exhibit.sectionId]) bySection[exhibit.sectionId] = [];
-      bySection[exhibit.sectionId].push(exhibit);
-    }
-    // Sort each section's exhibits by sortOrder, then label
-    for (const sectionId of Object.keys(bySection)) {
-      bySection[sectionId].sort((a, b) =>
-        (a.sortOrder ?? 0) - (b.sortOrder ?? 0) || (a.label ?? '').localeCompare(b.label ?? ''),
-      );
-    }
+  for (const exhibit of exhibits) {
+    if (!exhibit.sectionId) continue;
+    if (!bySection[exhibit.sectionId]) bySection[exhibit.sectionId] = [];
+    bySection[exhibit.sectionId].push(exhibit);
+  }
+  for (const id of Object.keys(bySection)) {
+    bySection[id].sort((a, b) =>
+      (a.sortOrder ?? 0) - (b.sortOrder ?? 0) || (a.label ?? '').localeCompare(b.label ?? ''),
+    );
   }
 
   return FLOOR_META.map((meta) => {
     const floorSections = FLOOR_SECTIONS.find((f) => f.floorId === meta.id)?.sections ?? [];
 
-    const sections = floorSections.map(({ stubCount, stubPrefix, stubTint, ...section }) => {
-      const exhibits = bySection[section.id]?.length
-        ? bySection[section.id]
-        : stubExhibits(stubCount, stubPrefix, stubTint);
-
-      return { ...section, exhibits };
-    });
+    const sections = floorSections
+      .filter((s) => roomMeta[s.id])  // only show rooms that have a Collection entry
+      .map(({ stubCount, stubPrefix, stubTint, ...section }) => ({
+        ...section,
+        name:        roomMeta[section.id].name || section.name,
+        description: roomMeta[section.id].description,
+        exhibits:    bySection[section.id] || [],
+      }));
 
     return { ...meta, sections };
   });

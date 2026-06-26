@@ -52,12 +52,12 @@ function POVView({ floor, section, onOpen, povStyle = 'gallery', density = 'comf
 function layoutExhibits(exhibits, density) {
   const dense = density === 'dense';
 
-  // Split by wall
-  const byWall = { back: [], left: [], right: [] };
-  exhibits.forEach((e) => {
-    const wall = ['back', 'left', 'right'].includes(e.wall) ? e.wall : 'back';
-    byWall[wall].push(e);
-  });
+  // Auto-assign walls by sort order: first 6 on back, next 3 on left, next 3 on right.
+  const byWall = {
+    back:  exhibits.slice(0, 6),
+    left:  exhibits.slice(6, 9),
+    right: exhibits.slice(9, 12),
+  };
 
   const slots = [];
 
