@@ -33,8 +33,8 @@ const NOTION_DB_ID  = process.env.NOTION_EXHIBITS_DB_ID;
 const NOTION_VERSION = '2022-06-28';
 
 /* ── static files ── */
-app.use(express.static(path.join(__dirname)));
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 /* ── /api/exhibits ──────────────────────────────────────────── */
 app.get('/api/exhibits', async (req, res) => {
