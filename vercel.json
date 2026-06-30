@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/exhibits.js": {
-      "includeFiles": ["floors-structure.js"]
+      "includeFiles": "floors-structure.js"
     }
   }
 }
