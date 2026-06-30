@@ -4,17 +4,17 @@ require('dotenv').config();
 
 const { buildFloors } = require('../floors-structure');
 
-const NOTION_TOKEN   = process.env.NOTION_TOKEN;
-const NOTION_DB_ID   = process.env.NOTION_EXHIBITS_DB_ID;
 const NOTION_VERSION = '2022-06-28';
 
 module.exports = async (req, res) => {
+  const NOTION_TOKEN = process.env.NOTION_TOKEN;
+  const NOTION_DB_ID = process.env.NOTION_EXHIBITS_DB_ID;
   try {
     if (!NOTION_TOKEN || !NOTION_DB_ID) {
       console.log('[api/exhibits] Notion not configured — returning fallback data');
       return res.json(buildFloors());
     }
-    const exhibits = await fetchAllExhibits();
+    const exhibits = await fetchAllExhibits(NOTION_TOKEN, NOTION_DB_ID);
     res.json(buildFloors(exhibits));
   } catch (err) {
     console.error('[api/exhibits] failed:', err.message);
@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
   }
 };
 
-async function fetchAllExhibits() {
+async function fetchAllExhibits(NOTION_TOKEN, NOTION_DB_ID) {
   const results = [];
   let cursor;
 
