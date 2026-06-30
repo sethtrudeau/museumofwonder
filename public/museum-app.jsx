@@ -402,15 +402,16 @@ function FingerprintScanner() {
   const CX = 30;
   // Loop-pattern ridges: arcs from (CX-rx, cy) to (CX+rx, cy) arching upward.
   // cy is the y of the open end (bottom of each arch); top of arch = cy - ry.
+  // Designed to fill the full 60×80 viewBox.
   const RIDGES = [
-    { rx: 4,  ry: 5,  cy: 56 },
-    { rx: 7,  ry: 10, cy: 57 },
-    { rx: 11, ry: 15, cy: 58 },
-    { rx: 15, ry: 20, cy: 59 },
-    { rx: 19, ry: 25, cy: 60 },
-    { rx: 22, ry: 29, cy: 61 },
-    { rx: 25, ry: 33, cy: 62 },
-    { rx: 27, ry: 36, cy: 63 },
+    { rx: 4,  ry: 8,  cy: 72 },
+    { rx: 7,  ry: 16, cy: 73 },
+    { rx: 11, ry: 26, cy: 74 },
+    { rx: 15, ry: 36, cy: 75 },
+    { rx: 19, ry: 46, cy: 76 },
+    { rx: 22, ry: 55, cy: 77 },
+    { rx: 25, ry: 63, cy: 78 },
+    { rx: 27, ry: 70, cy: 78 },
   ];
 
   // sweep=0 draws the arc through the top (upward arch = ∩ shape)
@@ -419,7 +420,7 @@ function FingerprintScanner() {
 
   const ridgesDim = (
     <>
-      <circle cx={CX} cy="54" r="1.5" fill="var(--text4)" opacity="0.35"/>
+      <circle cx={CX} cy="72" r="1.5" fill="var(--text4)" opacity="0.35"/>
       {RIDGES.map((r, i) => (
         <path key={i} d={d(r)}
           fill="none" stroke="var(--text4)" strokeWidth="1" strokeLinecap="round" opacity="0.35"/>
@@ -429,7 +430,7 @@ function FingerprintScanner() {
 
   const ridgesBright = (
     <>
-      <circle cx={CX} cy="54" r="1.5" fill="var(--ink)"/>
+      <circle cx={CX} cy="72" r="1.5" fill="var(--ink)"/>
       {RIDGES.map((r, i) => (
         <path key={i} d={d(r)}
           fill="none" stroke="var(--ink)" strokeWidth="1.5" strokeLinecap="round"/>

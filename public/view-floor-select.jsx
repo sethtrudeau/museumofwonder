@@ -175,11 +175,20 @@ function BuildingFloor({ floor, x, y, w, h, isCurrent, onPick }) {
       {/* status pill on the right */}
       <g transform={`translate(${w - padX - 6}, ${padY + 6})`} textAnchor="end">
         <text className="fsv-floor__status">
-          {floor.status === 'open' && '◉ open'}
-          {floor.status === 'rotating' && '◐ rotating'}
-          {floor.status === 'in-progress' && '◯ in progress'}
+          {floor.sections.length === 0
+            ? '◌ opening soon'
+            : floor.status === 'open' ? '◉ open'
+            : floor.status === 'rotating' ? '◐ rotating'
+            : '◯ in progress'}
         </text>
       </g>
+
+      {/* "Exhibit opening soon" label for floors with no content yet */}
+      {floor.sections.length === 0 && (
+        <text x={70} y={padY + 56} className="fsv-floor__soon">
+          Exhibit opening soon
+        </text>
+      )}
 
       {/* enter call-to-action that appears on hover via CSS */}
       <text x={w - padX - 6} y={h - padY - 4} textAnchor="end" className="fsv-floor__enter">
@@ -302,6 +311,14 @@ function FloorSelectStyles() {
         letter-spacing: 0.06em; text-transform: uppercase;
       }
       .fsv-floor.is-current .fsv-floor__status { fill: var(--on-highlighter); }
+      .fsv-floor__soon {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        fill: var(--text3);
+        letter-spacing: 0.06em; text-transform: uppercase;
+        font-style: italic;
+      }
+      .fsv-floor.is-current .fsv-floor__soon { fill: var(--on-highlighter); }
       .fsv-floor__enter {
         font-family: var(--font-mono);
         font-size: 10px;
