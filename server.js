@@ -38,6 +38,7 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.ht
 
 /* ── /api/exhibits ──────────────────────────────────────────── */
 app.get('/api/exhibits', async (req, res) => {
+  console.log('[api/exhibits] TOKEN set:', !!NOTION_TOKEN, '| DB_ID set:', !!NOTION_DB_ID);
   try {
     if (!NOTION_TOKEN || !NOTION_DB_ID) {
       console.log('[api/exhibits] Notion not configured — returning fallback data');
@@ -45,7 +46,14 @@ app.get('/api/exhibits', async (req, res) => {
     }
 
     const notionExhibits = await fetchAllExhibits();
-    res.json(buildFloors(notionExhibits));
+    console.log('[api/exhibits] Fetched', notionExhibits.length, 'entries from Notion');
+    console.log('[api/exhibits] Types:', notionExhibits.map(e => e.type).join(', ') || '(none)');
+    console.log('[api/exhibits] SectionIds:', notionExhibits.map(e => e.sectionId).join(', ') || '(none)');
+    const floors = buildFloors(notionExhibits);
+    console.log('[api/exhibits] buildFloors produced', floors.length, 'floors,',
+      floors.reduce((n, f) => n + f.sections.length, 0), 'sections,',
+      floors.reduce((n, f) => n + f.sections.reduce((m, s) => m + s.exhibits.length, 0), 0), 'exhibits');
+    res.json(floors);
   } catch (err) {
     console.error('[api/exhibits] Notion fetch failed:', err.message);
     // Always return something so the museum loads
