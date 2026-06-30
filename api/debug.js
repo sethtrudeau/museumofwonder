@@ -25,7 +25,9 @@ module.exports = async (req, res) => {
 
   res.json({
     tokenSet: !!NOTION_TOKEN,
+    tokenPreview: NOTION_TOKEN ? `${NOTION_TOKEN.slice(0, 6)}...${NOTION_TOKEN.slice(-4)}` : null,
     dbIdSet: !!NOTION_DB_ID,
+    dbIdPreview: NOTION_DB_ID ? `${NOTION_DB_ID.slice(0, 6)}...${NOTION_DB_ID.slice(-4)}` : null,
     nodeEnv: process.env.NODE_ENV,
     notionResult,
     notionError,
