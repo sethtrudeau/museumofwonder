@@ -1,14 +1,7 @@
 {
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["public/**", "floors-structure.js"]
-      }
+  "functions": {
+    "api/exhibits.js": {
+      "includeFiles": ["floors-structure.js"]
     }
-  ],
-  "routes": [
-    { "src": "/(.*)", "dest": "/server.js" }
-  ]
+  }
 }
