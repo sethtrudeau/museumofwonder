@@ -279,10 +279,12 @@ function GalleryPOV({ section, floor, density, onOpen, brandDecor = true }) {
               fill="rgba(12,15,20,0.18)"/>
             {/* brand composition clipped to the skewed plane */}
             <BrandPoly points={[p00, p10, p11, p01]} seed={exhibit.id}/>
-            {/* label number */}
+            {/* title below side-wall piece */}
             <text x={labelX} y={labelY}
               textAnchor="middle"
-              className="pov-label">{exhibit.label}</text>
+              className="pov-label pov-label--title">
+              {exhibit.title.length > 18 ? exhibit.title.slice(0, 16) + '…' : exhibit.title}
+            </text>
             {/* hover halo */}
             <polygon
               className="pov-piece__halo-poly"
@@ -340,14 +342,22 @@ function GalleryPiece({ x, y, w, h, exhibit, floorPalette, onOpen }) {
       {/* Brand composition inside the frame */}
       <BrandTile x={x} y={y} w={w} h={h} seed={exhibit.id}/>
 
-      {/* Label number */}
-      <text x={x + 8} y={y + h + 14} className="pov-label">
-        {exhibit.label}
-      </text>
-      {/* Title — clip to width */}
-      <text x={x + 28} y={y + h + 14} className="pov-label pov-label--title">
-        {exhibit.title.length > 32 ? exhibit.title.slice(0, 30) + '…' : exhibit.title}
-      </text>
+      {/* Title + byline below piece */}
+      <foreignObject x={x} y={y + h + 6} width={w} height={52}>
+        <div xmlns="http://www.w3.org/1999/xhtml" style={{
+          fontFamily: 'var(--font-body)',
+          fontSize: '11px',
+          lineHeight: 1.35,
+          color: 'var(--text1)',
+          overflow: 'hidden',
+          maxHeight: '52px',
+        }}>
+          <div>{exhibit.title}</div>
+          {exhibit.byline && (
+            <div style={{ color: 'var(--text3)', fontSize: '10px', marginTop: 2 }}>{exhibit.byline}</div>
+          )}
+        </div>
+      </foreignObject>
 
       {/* Hover halo */}
       <rect

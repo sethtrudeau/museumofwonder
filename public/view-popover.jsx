@@ -72,9 +72,9 @@ function ExhibitBody({ exhibit, floor, section, onClose }) {
 
         {/* wall label header */}
         <div className="ex-label">
-          <div className="ex-label__num mono upper">№ {exhibit.label}</div>
           <h2 className="ex-label__title">{exhibit.title}</h2>
-          <div className="ex-label__byline">{exhibit.byline}</div>
+          {exhibit.label && <div className="ex-label__num mono upper">№ {exhibit.label}</div>}
+          {exhibit.description && <p className="ex-label__desc">{exhibit.description}</p>}
         </div>
 
         {/* essay */}
@@ -245,15 +245,16 @@ function PopoverStyles() {
         padding-bottom: 16px;
         border-bottom: 1px solid var(--outline);
       }
-      .ex-label__num { font-size: 10px; color: var(--text3); }
       .ex-label__title {
         font-family: var(--font-editorial);
         font-size: 28px; font-weight: 500;
         line-height: 1.15; letter-spacing: -0.014em;
         color: var(--text1); margin: 0;
       }
-      .ex-label__byline {
-        font-size: 12px; color: var(--text3);
+      .ex-label__num { font-size: 10px; color: var(--text3); }
+      .ex-label__desc {
+        font-size: 14px; line-height: 1.5;
+        color: var(--text2); margin: 0;
       }
 
       .ex-section-hd {
