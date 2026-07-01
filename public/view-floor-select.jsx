@@ -54,8 +54,7 @@ function FloorSelectView({ floors, currentFloorId, onPick, mapStyle = 'elevation
 
       <footer className="fsv__footer mono upper">
         <span>The Museum of Wonder</span>
-        <span>· Cross-section, scale 1:200 ·</span>
-        <span>Drawn by the curators, 2026</span>
+        <span>· Drawn by the curators, 2026</span>
       </footer>
     </div>
   );
@@ -80,16 +79,6 @@ function BuildingCutaway({ floors, currentFloorId, onPick, mapStyle }) {
       preserveAspectRatio="xMidYMid meet"
       role="img"
       aria-label="Cross-section of the Museum of Wonder">
-
-      {/* dimension line on left */}
-      <g className="fsv-dim" transform={`translate(8, ${ROOF_H})`}>
-        <line x1="0" y1="0" x2="0" y2={floors.length * (FLOOR_H + GAP) - GAP} />
-        <line x1="-4" y1="0" x2="4" y2="0"/>
-        <line x1="-4" y1={floors.length * (FLOOR_H + GAP) - GAP} x2="4" y2={floors.length * (FLOOR_H + GAP) - GAP}/>
-        <text x="-12" y={(floors.length * (FLOOR_H + GAP) - GAP) / 2} className="fsv-dim__t" transform={`rotate(-90, -12, ${(floors.length * (FLOOR_H + GAP) - GAP) / 2})`}>
-          24.6 m · 6 storeys
-        </text>
-      </g>
 
       {/* roof — pitched line only, no label */}
       <g transform="translate(40, 0)">

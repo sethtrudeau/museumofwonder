@@ -112,27 +112,17 @@ function ExhibitBody({ exhibit, floor, section, onClose }) {
           </section>
         )}
 
-        {/* try-it preview + full-window link */}
+        {/* try-it CTA */}
         {exhibit.tryItUrl && (
           <section className="ex-tryit">
-            <div className="ex-tryit__bar">
-              <h3 className="ex-section-hd mono upper" style={{ margin: 0 }}>Try it</h3>
-              <a
-                className="ex-tryit__open"
-                href={exhibit.tryItUrl}
-                target="_blank" rel="noopener noreferrer"
-                title="Open in full window">
-                {exhibit.tryItLabel || 'Open in Playlab'} ↗
-              </a>
-            </div>
-            <div className="ex-tryit__frame">
-              <iframe
-                src={exhibit.tryItUrl}
-                title={exhibit.tryItLabel || 'Try it'}
-                className="ex-tryit__iframe"
-                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-              />
-            </div>
+            <h3 className="ex-section-hd mono upper">Try it</h3>
+            <a
+              className="ex-tryit__btn"
+              href={exhibit.tryItUrl}
+              target="_blank" rel="noopener noreferrer">
+              <span className="ex-tryit__label">{exhibit.tryItLabel || 'Open in Playlab'}</span>
+              <span className="ex-tryit__arrow">↗</span>
+            </a>
           </section>
         )}
 
@@ -320,38 +310,19 @@ function PopoverStyles() {
         font-size: 10px; opacity: 0.75;
       }
 
-      .ex-tryit__bar {
+      .ex-tryit__btn {
         display: flex; align-items: center; justify-content: space-between;
-        margin-bottom: 10px;
-      }
-      .ex-tryit__open {
-        font-family: var(--font-mono);
-        font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
-        color: var(--text2);
-        text-decoration: none;
-        padding: 4px 8px;
-        border: 1px solid var(--outline-quiet);
+        gap: 12px;
+        padding: 14px 18px;
+        background: var(--ink);
+        color: var(--ink-inverse);
         border-radius: var(--r-control);
-        transition: background-color var(--dur-fast) var(--ease-fast),
-                    color var(--dur-fast) var(--ease-fast);
+        text-decoration: none;
+        transition: background-color var(--dur-fast) var(--ease-fast);
       }
-      .ex-tryit__open:hover {
-        background: var(--ink); color: var(--ink-inverse);
-        border-color: var(--ink);
-      }
-      .ex-tryit__frame {
-        position: relative;
-        aspect-ratio: 4 / 3;
-        border-radius: var(--r-surface);
-        border: 1px solid var(--outline);
-        overflow: hidden;
-        background: var(--surface1);
-      }
-      .ex-tryit__iframe {
-        position: absolute; inset: 0;
-        width: 100%; height: 100%;
-        border: none;
-      }
+      .ex-tryit__btn:hover { background: #252528; }
+      .ex-tryit__label { font-size: 14px; font-weight: 500; }
+      .ex-tryit__arrow { font-size: 18px; opacity: 0.7; }
 
       .ex-stub {
         font-size: 11px; color: var(--text3);

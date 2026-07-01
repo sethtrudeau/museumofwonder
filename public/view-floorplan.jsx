@@ -81,14 +81,6 @@ function FloorplanView({ floor, currentSectionId, onPick, mapStyle = 'elevation'
             <text x="0" y="-0.7" textAnchor="middle" className="fpv-compass__t">N</text>
           </g>
 
-          {/* dimension along bottom */}
-          <g className="fpv-dim" transform={`translate(0, ${GRID_H + 1.4})`}>
-            <line x1="0" y1="0" x2={GRID_W} y2="0" stroke="var(--text4)" strokeWidth="0.03"/>
-            <line x1="0" y1="-0.15" x2="0" y2="0.15" stroke="var(--text4)" strokeWidth="0.03"/>
-            <line x1={GRID_W} y1="-0.15" x2={GRID_W} y2="0.15" stroke="var(--text4)" strokeWidth="0.03"/>
-            <text x={GRID_W / 2} y="0.5" textAnchor="middle" className="fpv-dim__t">42 m</text>
-          </g>
-
           {/* sections */}
           {floor.sections.map((s) => (
             <Room key={s.id}
@@ -109,9 +101,6 @@ function FloorplanView({ floor, currentSectionId, onPick, mapStyle = 'elevation'
           </g>
         </svg>
 
-        <figcaption className="fpv__caption mono upper">
-          Plan view · scale ≈ 1:80 · north up
-        </figcaption>
       </figure>
     </div>
   );
@@ -188,14 +177,6 @@ function Room({ section, palette, isCurrent, onPick, showLabels, brandDecor }) {
           <BrandShape type={wmType} cx={wmCx} cy={wmCy} size={wmSize} color={roomColor} seed={section.id}/>
         </g>
       )}
-
-      {/* exhibit dots */}
-      {dotPositions.map((p, i) => (
-        <g key={exhibits[i].id} transform={`translate(${p.x}, ${p.y})`}>
-          <circle r="0.22" className="fpv-room__dot"/>
-          <text y="0.07" textAnchor="middle" className="fpv-room__dotnum">{exhibits[i].label}</text>
-        </g>
-      ))}
 
       {/* room name */}
       {showLabels && (

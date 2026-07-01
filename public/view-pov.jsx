@@ -342,20 +342,17 @@ function GalleryPiece({ x, y, w, h, exhibit, floorPalette, onOpen }) {
       {/* Brand composition inside the frame */}
       <BrandTile x={x} y={y} w={w} h={h} seed={exhibit.id}/>
 
-      {/* Title + byline below piece */}
-      <foreignObject x={x} y={y + h + 6} width={w} height={52}>
+      {/* Title below piece */}
+      <foreignObject x={x} y={y + h + 6} width={w} height={36}>
         <div xmlns="http://www.w3.org/1999/xhtml" style={{
           fontFamily: 'var(--font-body)',
           fontSize: '11px',
           lineHeight: 1.35,
           color: 'var(--text1)',
           overflow: 'hidden',
-          maxHeight: '52px',
+          maxHeight: '36px',
         }}>
-          <div>{exhibit.title}</div>
-          {exhibit.byline && (
-            <div style={{ color: 'var(--text3)', fontSize: '10px', marginTop: 2 }}>{exhibit.byline}</div>
-          )}
+          {exhibit.title}
         </div>
       </foreignObject>
 
@@ -506,30 +503,6 @@ function SchematicPOV({ section, floor, density, onOpen }) {
       <rect x={WALL_X} y={WALL_Y} width={WALL_W} height={WALL_H}
         fill="var(--surface2)" stroke="var(--outline)" strokeWidth="1.5"/>
 
-      {/* dimension line — top */}
-      <g className="pov-dim">
-        <line x1={WALL_X} y1={WALL_Y - 22} x2={WALL_X + WALL_W} y2={WALL_Y - 22}/>
-        <line x1={WALL_X} y1={WALL_Y - 28} x2={WALL_X} y2={WALL_Y - 16}/>
-        <line x1={WALL_X + WALL_W} y1={WALL_Y - 28} x2={WALL_X + WALL_W} y2={WALL_Y - 16}/>
-        <text x={WALL_X + WALL_W / 2} y={WALL_Y - 30} textAnchor="middle">
-          {WALL_W / 30 | 0} M · WALL LENGTH
-        </text>
-      </g>
-
-      {/* dimension line — right */}
-      <g className="pov-dim">
-        <line x1={WALL_X + WALL_W + 22} y1={WALL_Y} x2={WALL_X + WALL_W + 22} y2={WALL_Y + WALL_H}/>
-        <line x1={WALL_X + WALL_W + 16} y1={WALL_Y} x2={WALL_X + WALL_W + 28} y2={WALL_Y}/>
-        <line x1={WALL_X + WALL_W + 16} y1={WALL_Y + WALL_H} x2={WALL_X + WALL_W + 28} y2={WALL_Y + WALL_H}/>
-        <text
-          x={WALL_X + WALL_W + 38}
-          y={WALL_Y + WALL_H / 2}
-          textAnchor="start" dominantBaseline="middle"
-          transform={`rotate(-90, ${WALL_X + WALL_W + 38}, ${WALL_Y + WALL_H / 2})`}>
-          {WALL_H / 60 | 0} M · CEILING
-        </text>
-      </g>
-
       {/* baseboard hatch */}
       {Array.from({ length: Math.floor(WALL_W / 24) }).map((_, i) => (
         <line key={i}
@@ -539,11 +512,6 @@ function SchematicPOV({ section, floor, density, onOpen }) {
       ))}
       <line x1={WALL_X} y1={WALL_Y + WALL_H} x2={WALL_X + WALL_W} y2={WALL_Y + WALL_H}
         stroke="var(--outline)" strokeWidth="1.25"/>
-      <text x={WALL_X + WALL_W / 2} y={WALL_Y + WALL_H + 28}
-        textAnchor="middle"
-        className="pov-ground">
-        FLOOR · OAK PLANK, OILED
-      </text>
 
       {/* Pieces */}
       {slots.map((slot, i) => {
@@ -581,10 +549,7 @@ function SchematicPOV({ section, floor, density, onOpen }) {
 
       {/* title bar at top */}
       <text x={WALL_X} y={32} className="pov-schematic-title">
-        ELEVATION · NORTH WALL · {section.name.toUpperCase()}
-      </text>
-      <text x={W - PAD_X} y={32} textAnchor="end" className="pov-schematic-title">
-        SCALE 1:25 · DWG-{floor.num}.{section.id.toUpperCase()}
+        {section.name.toUpperCase()}
       </text>
     </svg>
   );
