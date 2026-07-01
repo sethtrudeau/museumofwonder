@@ -79,7 +79,7 @@ function pageToExhibit(page) {
     wall:        select(p['Wall']) || null,
     essay:       text(p['Essay']),
     quote:       quoteText ? { text: quoteText, attribution: text(p['Quote Attribution']) } : null,
-    video:       bool(p['Has Video']) ? { caption: text(p['Video Caption']) } : null,
+    video:       bool(p['Has Video']) ? { caption: text(p['Video Caption']), url: url(p['Mini App URL']) || null } : null,
     hasMiniApp:  bool(p['Has Mini App']),
     miniAppUrl:  url(p['Mini App URL']) || null,
     tryItUrl:    url(p['Try It URL']),

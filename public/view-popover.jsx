@@ -101,14 +101,22 @@ function ExhibitBody({ exhibit, floor, section, onClose }) {
           </section>
         )}
 
-        {/* video placeholder */}
-        {exhibit.video && (
+        {/* video embed */}
+        {exhibit.video && exhibit.video.url && (
           <section className="ex-video">
             <h3 className="ex-section-hd mono upper">Video</h3>
             <div className="ex-video__frame">
-              <div className="ex-video__play">▶</div>
-              <div className="ex-video__cap mono upper">{exhibit.video.caption}</div>
+              <iframe
+                src={exhibit.video.url}
+                className="ex-video__iframe"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                title={exhibit.video.caption || exhibit.title}
+              />
             </div>
+            {exhibit.video.caption && (
+              <div className="ex-video__cap mono upper">{exhibit.video.caption}</div>
+            )}
           </section>
         )}
 
@@ -290,24 +298,18 @@ function PopoverStyles() {
       .ex-video__frame {
         position: relative;
         aspect-ratio: 16 / 9;
-        background: var(--ink);
-        color: var(--ink-inverse);
         border-radius: var(--r-surface);
         overflow: hidden;
-        display: flex; align-items: center; justify-content: center;
+        background: var(--ink);
       }
-      .ex-video__play {
-        width: 56px; height: 56px;
-        border-radius: 999px;
-        background: var(--ink-inverse);
-        color: var(--ink);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 20px;
-        padding-left: 4px;
+      .ex-video__iframe {
+        position: absolute; inset: 0;
+        width: 100%; height: 100%;
+        border: none;
       }
       .ex-video__cap {
-        position: absolute; left: 12px; bottom: 10px;
-        font-size: 10px; opacity: 0.75;
+        font-size: 10px; color: var(--text3);
+        margin-top: 6px;
       }
 
       .ex-tryit__btn {
