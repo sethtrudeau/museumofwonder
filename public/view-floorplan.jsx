@@ -11,6 +11,7 @@
 
 function FloorplanView({ floor, currentSectionId, onPick, mapStyle = 'elevation', showLabels = true, brandDecor = true }) {
   if (!floor) return null;
+  const [expandedEssay, setExpandedEssay] = React.useState(null);
 
   // floor.sections are positioned in a 24×14 grid (units 0..24 × 0..14)
   const GRID_W = 24;
@@ -33,17 +34,34 @@ function FloorplanView({ floor, currentSectionId, onPick, mapStyle = 'elevation'
         </dl>
 
         <ol className="fpv__rooms" aria-label="Rooms on this floor">
-          {floor.sections.map((s) => (
-            <li key={s.id}>
-              <button
-                className={`fpv-roomrow ${s.id === currentSectionId ? 'is-current' : ''}`}
-                onClick={() => onPick(s.id)}>
-                <span className="fpv-roomrow__dot" style={{ background: floor.palette }}/>
-                <span className="fpv-roomrow__name">{s.name}</span>
-                <span className="fpv-roomrow__count mono">{s.exhibits.length}</span>
-              </button>
-            </li>
-          ))}
+          {floor.sections.map((s) => {
+            const isExpanded = expandedEssay === s.id;
+            const exhibitCount = s.exhibits.filter(e => !e.isIntro).length;
+            return (
+              <li key={s.id}>
+                <div className="fpv-roomrow-wrap">
+                  <button
+                    className={`fpv-roomrow ${s.id === currentSectionId ? 'is-current' : ''}`}
+                    onClick={() => onPick(s.id)}>
+                    <span className="fpv-roomrow__dot" style={{ background: floor.palette }}/>
+                    <span className="fpv-roomrow__name">{s.name}</span>
+                    <span className="fpv-roomrow__count mono">{exhibitCount}</span>
+                  </button>
+                  {s.essay && (
+                    <button
+                      className={`fpv-roomrow__essay-btn ${isExpanded ? 'is-open' : ''}`}
+                      onClick={() => setExpandedEssay(isExpanded ? null : s.id)}
+                      aria-label={isExpanded ? 'Hide collection note' : 'Read collection note'}>
+                      {isExpanded ? '−' : '+'}
+                    </button>
+                  )}
+                </div>
+                {isExpanded && s.essay && (
+                  <p className="fpv-roomrow__essay">{s.essay}</p>
+                )}
+              </li>
+            );
+          })}
         </ol>
 
         <div className="mono upper fpv__hint">↘ Tap a room on the plan to enter</div>
@@ -232,8 +250,9 @@ function FloorplanStyles() {
       .fpv__stats dd { font-size: 16px; font-weight: 600; color: var(--ink); margin: 0; }
 
       .fpv__rooms { list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 1px; }
+      .fpv-roomrow-wrap { display: flex; align-items: center; gap: 4px; }
       .fpv-roomrow {
-        width: 100%;
+        flex: 1;
         display: grid;
         grid-template-columns: 12px 1fr auto;
         gap: 10px;
@@ -254,6 +273,28 @@ function FloorplanStyles() {
         letter-spacing: 0.06em;
       }
       .fpv-roomrow.is-current .fpv-roomrow__count { color: var(--on-highlighter); opacity: 0.7; }
+      .fpv-roomrow__essay-btn {
+        flex: none;
+        width: 24px; height: 24px;
+        background: none; border: 1px solid var(--outline-quiet);
+        border-radius: var(--r-control);
+        cursor: pointer; font-size: 14px; line-height: 1;
+        color: var(--text3);
+        display: flex; align-items: center; justify-content: center;
+        transition: background-color var(--dur-fast) var(--ease-fast),
+                    color var(--dur-fast) var(--ease-fast);
+      }
+      .fpv-roomrow__essay-btn:hover,
+      .fpv-roomrow__essay-btn.is-open { background: var(--surface1); color: var(--text1); }
+      .fpv-roomrow__essay {
+        font-size: 12px; line-height: 1.55;
+        color: var(--text2);
+        margin: 4px 0 8px 28px;
+        padding: 10px 12px;
+        background: var(--surface1);
+        border-radius: var(--r-control);
+        border-left: 2px solid var(--outline);
+      }
 
       .fpv__hint { font-size: 10px; color: var(--text3); }
 

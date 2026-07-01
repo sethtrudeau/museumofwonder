@@ -369,10 +369,10 @@ function buildFloors(notionEntries) {
   const collections = notionEntries.filter((e) => e.type === 'Collection');
   const exhibits    = notionEntries.filter((e) => e.type !== 'Collection');
 
-  // Build room metadata map from Collections: sectionId → { name, description }
+  // Build room metadata map from Collections: sectionId → { name, description, essay }
   const roomMeta = {};
   for (const col of collections) {
-    if (col.sectionId) roomMeta[col.sectionId] = { name: col.title, description: col.description || '' };
+    if (col.sectionId) roomMeta[col.sectionId] = { name: col.title, description: col.description || '', essay: col.essay || '' };
   }
 
   // Group exhibits by sectionId and sort by sortOrder then label
@@ -393,12 +393,22 @@ function buildFloors(notionEntries) {
 
     const sections = floorSections
       .filter((s) => roomMeta[s.id])  // only show rooms that have a Collection entry
-      .map(({ stubCount, stubPrefix, stubTint, ...section }) => ({
-        ...section,
-        name:        roomMeta[section.id].name || section.name,
-        description: roomMeta[section.id].description,
-        exhibits:    bySection[section.id] || [],
-      }));
+      .map(({ stubCount, stubPrefix, stubTint, ...section }) => {
+        const meta  = roomMeta[section.id];
+        const intro = meta.essay ? [{
+          id:      `${section.id}-intro`,
+          isIntro: true,
+          title:   meta.name,
+          essay:   meta.essay,
+        }] : [];
+        return {
+          ...section,
+          name:        meta.name || section.name,
+          description: meta.description,
+          essay:       meta.essay,
+          exhibits:    [...intro, ...(bySection[section.id] || [])],
+        };
+      });
 
     return { ...meta, sections };
   });

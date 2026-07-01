@@ -300,6 +300,14 @@ function GalleryPOV({ section, floor, density, onOpen, brandDecor = true }) {
         const py = BW_y1 + slot.y * (BW_y2 - BW_y1);
         const pw = slot.w * (BW_x2 - BW_x1);
         const ph = slot.h * (BW_y2 - BW_y1);
+        if (slot.exhibit.isIntro) {
+          return (
+            <CollectionPlaque key={slot.exhibit.id}
+              x={px} y={py} w={pw} h={ph}
+              exhibit={slot.exhibit}
+              onOpen={onOpen}/>
+          );
+        }
         return (
           <GalleryPiece key={slot.exhibit.id}
             x={px} y={py} w={pw} h={ph}
@@ -323,6 +331,49 @@ function GalleryPOV({ section, floor, density, onOpen, brandDecor = true }) {
         </text>
       </g>
     </svg>
+  );
+}
+
+/* Collection intro plaque — text panel on the back wall, opens essay in popover. */
+function CollectionPlaque({ x, y, w, h, exhibit, onOpen }) {
+  return (
+    <g
+      className="pov-piece"
+      onClick={() => onOpen(exhibit.id)}
+      role="button" tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(exhibit.id); } }}>
+      {/* shadow */}
+      <rect x={x + 2} y={y + 3} width={w} height={h} fill="rgba(12,15,20,0.12)"/>
+      {/* plaque background */}
+      <rect x={x} y={y} width={w} height={h}
+        fill="var(--surface1)" stroke="var(--outline)" strokeWidth="1.5"/>
+      {/* inner border */}
+      <rect x={x + 6} y={y + 6} width={w - 12} height={h - 12}
+        fill="none" stroke="var(--outline-quiet)" strokeWidth="0.5"/>
+      {/* text content */}
+      <foreignObject x={x + 14} y={y + 14} width={w - 28} height={h - 28}>
+        <div xmlns="http://www.w3.org/1999/xhtml" style={{
+          height: '100%', overflow: 'hidden',
+          display: 'flex', flexDirection: 'column', gap: '8px',
+        }}>
+          <div style={{
+            fontFamily: 'var(--font-editorial)',
+            fontSize: '14px', fontWeight: 500,
+            lineHeight: 1.2, letterSpacing: '-0.01em',
+            color: 'var(--text1)',
+          }}>{exhibit.title}</div>
+          <div style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: '10px', lineHeight: 1.45,
+            color: 'var(--text2)',
+            overflow: 'hidden',
+          }}>{exhibit.essay}</div>
+        </div>
+      </foreignObject>
+      {/* hover halo */}
+      <rect className="pov-piece__halo"
+        x={x - 4} y={y - 4} width={w + 8} height={h + 8} fill="none"/>
+    </g>
   );
 }
 
