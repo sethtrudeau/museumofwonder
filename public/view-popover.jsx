@@ -78,11 +78,14 @@ function ExhibitBody({ exhibit, floor, section, onClose }) {
           {exhibit.description && <p className="ex-label__desc">{exhibit.description}</p>}
         </div>
 
-        {/* essay */}
-        {exhibit.essay && (
+        {/* essay — long form (page body) takes precedence over short property field */}
+        {(exhibit.longEssay?.length || exhibit.essay) && (
           <section className="ex-essay">
             <h3 className="ex-section-hd mono upper">Wall label</h3>
-            <p>{exhibit.essay}</p>
+            {exhibit.longEssay?.length
+              ? <LongEssay blocks={exhibit.longEssay}/>
+              : <p>{exhibit.essay}</p>
+            }
           </section>
         )}
 
@@ -148,6 +151,49 @@ function ExhibitBody({ exhibit, floor, section, onClose }) {
       </div>
     </>
   );
+}
+
+/* Render an array of {type, text} blocks from Notion page body. */
+function LongEssay({ blocks }) {
+  const elements = [];
+  let listBuf = [];
+  let listType = null;
+
+  const flushList = () => {
+    if (!listBuf.length) return;
+    const Tag = listType === 'numbered_list_item' ? 'ol' : 'ul';
+    elements.push(
+      <Tag key={`list-${elements.length}`} className="ex-long-essay__list">
+        {listBuf.map((item, i) => <li key={i}>{item}</li>)}
+      </Tag>
+    );
+    listBuf = [];
+    listType = null;
+  };
+
+  for (let i = 0; i < blocks.length; i++) {
+    const { type, text } = blocks[i];
+    if (type === 'bulleted_list_item' || type === 'numbered_list_item') {
+      if (listType && listType !== type) flushList();
+      listType = type;
+      listBuf.push(text);
+    } else {
+      flushList();
+      if (type === 'heading_1') {
+        elements.push(<h2 key={i} className="ex-long-essay__h1">{text}</h2>);
+      } else if (type === 'heading_2') {
+        elements.push(<h3 key={i} className="ex-long-essay__h2">{text}</h3>);
+      } else if (type === 'heading_3') {
+        elements.push(<h4 key={i} className="ex-long-essay__h3">{text}</h4>);
+      } else if (type === 'quote') {
+        elements.push(<blockquote key={i} className="ex-long-essay__quote">{text}</blockquote>);
+      } else {
+        elements.push(<p key={i} className="ex-long-essay__p">{text}</p>);
+      }
+    }
+  }
+  flushList();
+  return <div className="ex-long-essay">{elements}</div>;
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -343,6 +389,47 @@ function PopoverStyles() {
       }
 
       .ex-miniapp { /* mini-app body styles live in view-mini-apps.jsx */ }
+
+      .ex-long-essay { display: flex; flex-direction: column; gap: 12px; }
+      .ex-long-essay__p {
+        font-family: var(--font-body);
+        font-size: 15px; line-height: 1.6;
+        color: var(--text1); margin: 0;
+      }
+      .ex-long-essay__h1 {
+        font-family: var(--font-editorial);
+        font-size: 20px; font-weight: 500;
+        line-height: 1.2; margin: 8px 0 0;
+        color: var(--text1);
+      }
+      .ex-long-essay__h2 {
+        font-family: var(--font-editorial);
+        font-size: 17px; font-weight: 500;
+        line-height: 1.2; margin: 6px 0 0;
+        color: var(--text1);
+      }
+      .ex-long-essay__h3 {
+        font-size: 13px; font-weight: 600;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        margin: 6px 0 0; color: var(--text2);
+      }
+      .ex-long-essay__quote {
+        margin: 0;
+        padding: 12px 16px;
+        border-left: 2px solid var(--outline);
+        font-family: var(--font-editorial);
+        font-size: 16px; font-style: italic;
+        color: var(--text2); line-height: 1.45;
+      }
+      .ex-long-essay__list {
+        margin: 0; padding-left: 20px;
+        display: flex; flex-direction: column; gap: 6px;
+      }
+      .ex-long-essay__list li {
+        font-family: var(--font-body);
+        font-size: 15px; line-height: 1.6;
+        color: var(--text1);
+      }
     `}</style>
   );
 }

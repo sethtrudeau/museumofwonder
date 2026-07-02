@@ -15,7 +15,8 @@ module.exports = async (req, res) => {
       return res.json(buildFloors());
     }
     const exhibits = await fetchAllExhibits(NOTION_TOKEN, NOTION_DB_ID);
-    res.json(buildFloors(exhibits));
+    const exhibitsWithEssays = await attachLongEssays(exhibits, NOTION_TOKEN);
+    res.json(buildFloors(exhibitsWithEssays));
   } catch (err) {
     console.error('[api/exhibits] failed:', err.message);
     res.json(buildFloors());
@@ -51,6 +52,39 @@ async function fetchAllExhibits(NOTION_TOKEN, NOTION_DB_ID) {
   } while (cursor);
 
   return results;
+}
+
+/** Fetch page body blocks for all exhibits concurrently and attach as longEssay. */
+async function attachLongEssays(exhibits, NOTION_TOKEN) {
+  return Promise.all(exhibits.map(async (exhibit) => {
+    try {
+      const response = await fetch(`https://api.notion.com/v1/blocks/${exhibit.id}/children?page_size=100`, {
+        headers: {
+          'Authorization': `Bearer ${NOTION_TOKEN}`,
+          'Notion-Version': NOTION_VERSION,
+        },
+      });
+      if (!response.ok) return exhibit;
+      const data = await response.json();
+      const longEssay = serializeBlocks(data.results || []);
+      return longEssay.length ? { ...exhibit, longEssay } : exhibit;
+    } catch {
+      return exhibit;
+    }
+  }));
+}
+
+/** Convert Notion block objects to a simple array of {type, text} for the client. */
+function serializeBlocks(blocks) {
+  const out = [];
+  for (const block of blocks) {
+    const type = block.type;
+    const richText = block[type]?.rich_text ?? [];
+    const text = richText.map(t => t.plain_text).join('');
+    if (!text.trim()) continue;
+    out.push({ type, text });
+  }
+  return out;
 }
 
 function pageToExhibit(page) {
