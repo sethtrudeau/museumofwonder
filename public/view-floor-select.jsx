@@ -121,6 +121,8 @@ function BuildingCutaway({ floors, currentFloorId, onPick, mapStyle }) {
 function BuildingFloor({ floor, x, y, w, h, isCurrent, onPick }) {
   const padX = 8;
   const padY = 6;
+  const isEmpty = floor.sections.length === 0 ||
+    floor.sections.every(s => s.exhibits.filter(e => !e.isIntro).length === 0);
 
   return (
     <g
@@ -164,7 +166,7 @@ function BuildingFloor({ floor, x, y, w, h, isCurrent, onPick }) {
       {/* status pill on the right */}
       <g transform={`translate(${w - padX - 6}, ${padY + 6})`} textAnchor="end">
         <text className="fsv-floor__status">
-          {floor.sections.length === 0
+          {isEmpty
             ? '◌ opening soon'
             : floor.status === 'open' ? '◉ open'
             : floor.status === 'rotating' ? '◐ rotating'
@@ -173,7 +175,7 @@ function BuildingFloor({ floor, x, y, w, h, isCurrent, onPick }) {
       </g>
 
       {/* "Exhibit opening soon" label for floors with no content yet */}
-      {floor.sections.length === 0 && (
+      {isEmpty && (
         <text x={70} y={padY + 56} className="fsv-floor__soon">
           Exhibit opening soon
         </text>
