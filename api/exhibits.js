@@ -61,7 +61,6 @@ async function attachLongEssays(exhibits, NOTION_TOKEN) {
   const deadline = new Promise(resolve => setTimeout(() => resolve(exhibits), 7000));
 
   const work = Promise.all(exhibits.map(async (exhibit) => {
-    if (exhibit.type === 'Collection') return exhibit;
     try {
       const response = await fetch(`https://api.notion.com/v1/blocks/${exhibit.id}/children?page_size=100`, {
         headers: {

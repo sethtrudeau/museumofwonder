@@ -372,7 +372,12 @@ function buildFloors(notionEntries) {
   // Build room metadata map from Collections: sectionId → { name, description, essay }
   const roomMeta = {};
   for (const col of collections) {
-    if (col.sectionId) roomMeta[col.sectionId] = { name: col.title, description: col.description || '', essay: col.essay || '' };
+    if (col.sectionId) {
+      const essay = col.longEssay?.length
+        ? col.longEssay.map(b => b.text).join('\n\n')
+        : col.essay || '';
+      roomMeta[col.sectionId] = { name: col.title, description: col.description || '', essay };
+    }
   }
 
   // Group exhibits by sectionId and sort by sortOrder then label

@@ -78,13 +78,13 @@ function ExhibitBody({ exhibit, floor, section, onClose }) {
           {exhibit.description && <p className="ex-label__desc">{exhibit.description}</p>}
         </div>
 
-        {/* essay — long form (page body) takes precedence over short property field */}
-        {(exhibit.longEssay?.length || exhibit.essay) && (
+        {/* essay — property field takes priority; page body used as rich-text fallback */}
+        {(exhibit.essay || exhibit.longEssay?.length) && (
           <section className="ex-essay">
             <h3 className="ex-section-hd mono upper">Wall label</h3>
-            {exhibit.longEssay?.length
-              ? <LongEssay blocks={exhibit.longEssay}/>
-              : <p>{exhibit.essay}</p>
+            {exhibit.essay
+              ? <p>{exhibit.essay}</p>
+              : <LongEssay blocks={exhibit.longEssay}/>
             }
           </section>
         )}
