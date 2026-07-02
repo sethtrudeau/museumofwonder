@@ -54,9 +54,14 @@ async function fetchAllExhibits(NOTION_TOKEN, NOTION_DB_ID) {
   return results;
 }
 
-/** Fetch page body blocks for all exhibits concurrently and attach as longEssay. */
+/** Fetch page body blocks for all exhibits concurrently and attach as longEssay.
+ *  Races against a 7-second deadline so the serverless function never times out. */
 async function attachLongEssays(exhibits, NOTION_TOKEN) {
-  return Promise.all(exhibits.map(async (exhibit) => {
+  // Collection essays come from DB properties, not page body — skip their block fetch.
+  const deadline = new Promise(resolve => setTimeout(() => resolve(exhibits), 7000));
+
+  const work = Promise.all(exhibits.map(async (exhibit) => {
+    if (exhibit.type === 'Collection') return exhibit;
     try {
       const response = await fetch(`https://api.notion.com/v1/blocks/${exhibit.id}/children?page_size=100`, {
         headers: {
@@ -72,6 +77,8 @@ async function attachLongEssays(exhibits, NOTION_TOKEN) {
       return exhibit;
     }
   }));
+
+  return Promise.race([work, deadline]);
 }
 
 /** Convert Notion block objects to a simple array of {type, text} for the client. */
