@@ -34,8 +34,7 @@ function FloorSelectView({ floors, currentFloorId, onPick, mapStyle = 'elevation
           with Playlab.
         </h1>
         <p className="fsv__lede">
-          Six floors, open every day. The Atrium is on the ground floor. The Lab is on the roof.
-          Pick a floor to enter — you can change your mind from the directory at any time.
+          Six floors, open every day. Explore how others are building in Playlab and find some ways to go deeper. 
         </p>
         <div className="fsv__hint mono upper">↘ Click any floor to enter</div>
       </div>
@@ -121,8 +120,7 @@ function BuildingCutaway({ floors, currentFloorId, onPick, mapStyle }) {
 function BuildingFloor({ floor, x, y, w, h, isCurrent, onPick }) {
   const padX = 8;
   const padY = 6;
-  const isEmpty = floor.sections.length === 0 ||
-    floor.sections.every(s => s.exhibits.filter(e => !e.isIntro).length === 0);
+  const isEmpty = floor.sections.length === 0;
 
   return (
     <g
